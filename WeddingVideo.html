@@ -589,6 +589,27 @@
         filter: brightness(1.2);
       }
 
+      /* Center first slide content */
+      .slide[data-index="0"] .slide-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .slide[data-index="0"] .slide-inner .title {
+        text-align: center;
+      }
+      .slide[data-index="0"] .slide-inner .subhead {
+        text-align: center;
+      }
+      .slide[data-index="0"] .slide-inner .theme-badge {
+        text-align: center;
+      }
+      .slide[data-index="0"] .slide-inner .traditional-img {
+        max-width: 100%;
+        width: 100%;
+      }
+
       @media (max-width: 480px) {
         .slide-inner {
           padding: 20px 16px 18px;
@@ -781,7 +802,7 @@
         </audio>
 
         <div class="slides" id="slidesWrapper">
-          <!-- SLIDE 1: Invitation -->
+          <!-- SLIDE 1: Invitation (centered) -->
           <div class="slide" data-index="0">
             <div class="slide-nav">
               <div class="slide-nav-left">
@@ -944,12 +965,15 @@
                 ></iframe>
               </div>
 
+              <div class="anim-text" style="text-align: center; color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 4px;">
+                <i class="fas fa-heart" style="color: #d4b8a4"></i> Click to add to your calendar
+              </div>
               <div class="anim-text action-row" style="justify-content: center">
-                <a href="#" class="calendar-btn" id="addToCalendarIphone"
-                  ><i class="fab fa-apple"></i> iPhone</a
-                >
                 <a href="#" class="calendar-btn" id="addToCalendarGoogle"
                   ><i class="fab fa-google"></i> Google</a
+                >
+                <a href="#" class="calendar-btn" id="addToCalendarIphone"
+                  ><i class="fab fa-apple"></i> iPhone</a
                 >
               </div>
 
@@ -1258,6 +1282,33 @@
           audio.volume = parseFloat(volumeSlider.value);
         });
 
+        // --- Add to Calendar: Google Calendar ---
+        document
+          .getElementById("addToCalendarGoogle")
+          .addEventListener("click", function (e) {
+            e.preventDefault();
+            const event = {
+              title: "Raymond & Makhutja Lobola Celebration",
+              description:
+                "Lobola celebration for Raymond & Makhutja. Dress code: Traditional. Venue: Ga-Matlala Madietane Moshe, House 10065, Limpopo.",
+              location:
+                "Ga-Matlala Madietane Moshe, House 10065, Limpopo, South Africa",
+              start: "20261219T100000",
+              end: "20261219T160000",
+            };
+            const baseUrl =
+              "https://calendar.google.com/calendar/render?action=TEMPLATE";
+            const params = new URLSearchParams({
+              text: event.title,
+              details: event.description,
+              location: event.location,
+              dates: `${event.start}/${event.end}`,
+              sf: "true",
+              output: "xml",
+            });
+            window.open(`${baseUrl}&${params.toString()}`, "_blank");
+          });
+
         // --- Add to Calendar: iPhone (download .ics) ---
         document
           .getElementById("addToCalendarIphone")
@@ -1296,33 +1347,6 @@
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(link.href);
-          });
-
-        // --- Add to Calendar: Google Calendar ---
-        document
-          .getElementById("addToCalendarGoogle")
-          .addEventListener("click", function (e) {
-            e.preventDefault();
-            const event = {
-              title: "Raymond & Makhutja Lobola Celebration",
-              description:
-                "Lobola celebration for Raymond & Makhutja. Dress code: Traditional. Venue: Ga-Matlala Madietane Moshe, House 10065, Limpopo.",
-              location:
-                "Ga-Matlala Madietane Moshe, House 10065, Limpopo, South Africa",
-              start: "20261219T100000",
-              end: "20261219T160000",
-            };
-            const baseUrl =
-              "https://calendar.google.com/calendar/render?action=TEMPLATE";
-            const params = new URLSearchParams({
-              text: event.title,
-              details: event.description,
-              location: event.location,
-              dates: `${event.start}/${event.end}`,
-              sf: "true",
-              output: "xml",
-            });
-            window.open(`${baseUrl}&${params.toString()}`, "_blank");
           });
 
         // --- Slide logic ---
