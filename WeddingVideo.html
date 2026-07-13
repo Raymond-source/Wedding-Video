@@ -69,6 +69,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
       }
       .slide-inner {
         background: rgba(0, 0, 0, 0.35);
@@ -124,33 +125,122 @@
         opacity: 0;
         pointer-events: none;
       }
-      .sound-toggle {
+
+      /* ---- FLOATING NAVIGATION (far left & far right) ---- */
+      .slide-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        width: 100%;
+        height: 0;
+      }
+      .slide-nav .arrow-btn {
+        pointer-events: auto;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        color: #ffffff;
+        cursor: pointer;
+        transition: 0.25s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        flex-shrink: 0;
+      }
+      .slide-nav .arrow-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.08);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+      .slide-nav .arrow-btn:active {
+        transform: scale(0.95);
+      }
+      .slide-nav-left {
+        position: absolute;
+        left: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .slide-nav-right {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      /* ---- VOLUME SLIDER (standalone, no icon) ---- */
+      .volume-control {
         position: absolute;
         bottom: 24px;
         right: 24px;
+        z-index: 25;
         background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(8px);
         -webkit-backdrop-filter: blur(8px);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        color: white;
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
+        border-radius: 30px;
+        padding: 10px 14px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.4rem;
-        cursor: pointer;
-        transition: 0.25s;
+        gap: 10px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        z-index: 10;
+        transition: 0.25s;
       }
-      .sound-toggle:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: scale(1.05);
+      .volume-control:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.2);
       }
-      .sound-toggle i {
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      .volume-control .volume-slider {
+        width: 80px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        appearance: none;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .volume-control .volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #d4b8a4;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(212, 184, 164, 0.3);
+      }
+      .volume-control .volume-slider::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #d4b8a4;
+        cursor: pointer;
+        border: none;
+      }
+      .volume-control .volume-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        min-width: 20px;
+        text-align: center;
+      }
+      .volume-control .volume-icon {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        width: 18px;
+        text-align: center;
       }
 
       .title {
@@ -205,30 +295,6 @@
       }
       .theme-badge i {
         margin-right: 8px;
-      }
-
-      .gift-grid {
-        display: flex;
-        gap: 14px;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin: 14px 0 10px;
-      }
-      .gift-grid img {
-        max-width: 200px;
-        width: 100%;
-        height: auto;
-        object-fit: contain;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        transition: 0.25s;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        background: rgba(255, 255, 255, 0.05);
-        padding: 8px;
-      }
-      .gift-grid img:hover {
-        border-color: #d4b8a4;
-        transform: scale(1.02);
       }
 
       .store-link {
@@ -312,22 +378,11 @@
         transform: scale(1.01);
       }
 
-      .nav-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 16px 24px 20px;
-        position: relative;
-        z-index: 5;
-        background: rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-        flex-shrink: 0;
-      }
       .dots {
         display: flex;
         gap: 12px;
+        justify-content: center;
+        padding: 12px 0 4px;
       }
       .dot {
         width: 12px;
@@ -341,26 +396,6 @@
       .dot.active {
         background: #d4b8a4;
         width: 32px;
-      }
-      .arrow-btn {
-        background: rgba(255, 255, 255, 0.06);
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        font-size: 1.2rem;
-        color: #ffffff;
-        cursor: pointer;
-        transition: 0.25s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-      }
-      .arrow-btn:hover {
-        background: rgba(255, 255, 255, 0.12);
-        transform: scale(1.04);
       }
 
       .anim-text {
@@ -562,12 +597,33 @@
         .title {
           font-size: 1.8rem;
         }
-        .sound-toggle {
-          width: 44px;
-          height: 44px;
-          font-size: 1.2rem;
+        .volume-control {
           bottom: 18px;
           right: 18px;
+          padding: 8px 12px;
+          gap: 8px;
+        }
+        .volume-control .volume-slider {
+          width: 50px;
+        }
+        .volume-control .volume-label {
+          font-size: 0.6rem;
+          min-width: 16px;
+        }
+        .volume-control .volume-icon {
+          font-size: 0.75rem;
+          width: 14px;
+        }
+        .slide-nav .arrow-btn {
+          width: 40px;
+          height: 40px;
+          font-size: 1rem;
+        }
+        .slide-nav-left {
+          left: 2px;
+        }
+        .slide-nav-right {
+          right: 2px;
         }
         .map-container {
           height: 130px;
@@ -607,10 +663,90 @@
         .bg-overlay {
           border-radius: 40px 40px 0 0;
         }
+        .slide-nav .arrow-btn {
+          width: 52px;
+          height: 52px;
+          font-size: 1.3rem;
+        }
+        .slide-nav-left {
+          left: 10px;
+        }
+        .slide-nav-right {
+          right: 10px;
+        }
+      }
+    </style>
+
+    <style>
+      #welcomeScreen {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+          url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&auto=format&fit=crop")
+            center/cover;
+      }
+      .welcome-content {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+        padding: 40px;
+        border-radius: 30px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      #enterInvitation {
+        padding: 18px 36px;
+        border: none;
+        border-radius: 50px;
+        background: linear-gradient(135deg, #d8bfa9, #c79d73);
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 15px 35px rgba(199, 157, 115, 0.45);
+        position: relative;
+        overflow: hidden;
+      }
+      #enterInvitation:before {
+        content: "";
+        position: absolute;
+        left: -120%;
+        top: 0;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.8),
+          transparent
+        );
+        transform: skewX(-20deg);
+        animation: shine 2.5s infinite;
+      }
+      @keyframes shine {
+        to {
+          left: 180%;
+        }
+      }
+      .fadeout {
+        opacity: 0;
+        transition: 0.8s;
       }
     </style>
   </head>
   <body>
+    <div id="welcomeScreen">
+      <div class="welcome-content">
+        <h1 style="font-family: Playfair Display; color: white">
+          Raymond <span style="color: #d4b8a4">&</span> Makhutja
+        </h1>
+        <p style="color: white">Lobola Celebration</p>
+        <button id="enterInvitation">💛 Tap to Open Invitation</button>
+      </div>
+    </div>
     <div class="invitation-card">
       <div class="slide-container" id="slideContainer">
         <!-- background video -->
@@ -619,8 +755,20 @@
             <source src="cows.mp4" type="video/mp4" />
           </video>
           <div class="bg-overlay"></div>
-          <div class="sound-toggle" id="soundToggle">
-            <i class="fas fa-volume-up"></i>
+
+          <!-- standalone volume slider (no icon) -->
+          <div class="volume-control" id="volumeControl">
+            <span class="volume-icon" id="volumeIcon">🔊</span>
+            <input
+              type="range"
+              class="volume-slider"
+              id="volumeSlider"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.5"
+            />
+            <span class="volume-label" id="volumeLabel">50%</span>
           </div>
         </div>
 
@@ -632,6 +780,18 @@
         <div class="slides" id="slidesWrapper">
           <!-- SLIDE 1: Invitation -->
           <div class="slide" data-index="0">
+            <div class="slide-nav">
+              <div class="slide-nav-left">
+                <button class="arrow-btn" id="prevBtnSlide0">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+              </div>
+              <div class="slide-nav-right">
+                <button class="arrow-btn" id="nextBtnSlide0">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="slide-inner">
               <div class="anim-text">
                 <h1 class="title">
@@ -689,6 +849,18 @@
 
           <!-- SLIDE 2: Bible Verse + Photo -->
           <div class="slide" data-index="1">
+            <div class="slide-nav">
+              <div class="slide-nav-left">
+                <button class="arrow-btn" id="prevBtnSlide1">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+              </div>
+              <div class="slide-nav-right">
+                <button class="arrow-btn" id="nextBtnSlide1">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="slide-inner">
               <div class="anim-text">
                 <img
@@ -715,6 +887,18 @@
 
           <!-- SLIDE 3: Couple + Date/Time + Map + Calendar -->
           <div class="slide" data-index="2">
+            <div class="slide-nav">
+              <div class="slide-nav-left">
+                <button class="arrow-btn" id="prevBtnSlide2">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+              </div>
+              <div class="slide-nav-right">
+                <button class="arrow-btn" id="nextBtnSlide2">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="slide-inner">
               <div class="anim-text">
                 <h2 class="title" style="font-size: 2rem">
@@ -788,6 +972,18 @@
 
           <!-- SLIDE 4: Gift Registry with Mr Price Logo -->
           <div class="slide" data-index="3">
+            <div class="slide-nav">
+              <div class="slide-nav-left">
+                <button class="arrow-btn" id="prevBtnSlide3">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+              </div>
+              <div class="slide-nav-right">
+                <button class="arrow-btn" id="nextBtnSlide3">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="slide-inner">
               <div class="anim-text">
                 <h2 class="title" style="font-size: 2rem">
@@ -880,6 +1076,18 @@
 
           <!-- SLIDE 5: RSVP -->
           <div class="slide" data-index="4">
+            <div class="slide-nav">
+              <div class="slide-nav-left">
+                <button class="arrow-btn" id="prevBtnSlide4">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+              </div>
+              <div class="slide-nav-right">
+                <button class="arrow-btn" id="nextBtnSlide4">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
             <div class="slide-inner">
               <div class="anim-text">
                 <h2 class="title" style="font-size: 2rem">
@@ -924,63 +1132,64 @@
               >
                 <i class="fas fa-music"></i> Let us know about dietary needs
               </div>
+
+              <!-- dots (slide indicator) -->
+              <div class="dots anim-text" id="dotsContainer">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+                <span class="dot" data-index="3"></span>
+                <span class="dot" data-index="4"></span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- navigation -->
-      <div class="nav-controls">
-        <button class="arrow-btn" id="prevBtn">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="dots" id="dotsContainer">
-          <span class="dot active" data-index="0"></span>
-          <span class="dot" data-index="1"></span>
-          <span class="dot" data-index="2"></span>
-          <span class="dot" data-index="3"></span>
-          <span class="dot" data-index="4"></span>
-        </div>
-        <button class="arrow-btn" id="nextBtn">
-          <i class="fas fa-chevron-right"></i>
-        </button>
       </div>
     </div>
 
     <script>
       (function () {
+        const ws = document.getElementById("welcomeScreen");
+        const eb = document.getElementById("enterInvitation");
+        eb.addEventListener("click", async () => {
+          try {
+            await audio.play();
+            audioReady = true;
+          } catch (e) {}
+          try {
+            bgVideo.play();
+          } catch (e) {}
+          ws.classList.add("fadeout");
+          setTimeout(() => ws.remove(), 800);
+        });
+
         const slidesWrapper = document.getElementById("slidesWrapper");
         const slides = document.querySelectorAll(".slide");
         const dots = document.querySelectorAll(".dot");
-        const prevBtn = document.getElementById("prevBtn");
-        const nextBtn = document.getElementById("nextBtn");
         let currentIndex = 0;
         const totalSlides = slides.length;
 
         // --- Local Audio ---
         const audio = document.getElementById("local-audio");
-        let isMuted = false;
         let audioReady = false;
 
-        function initAudio() {
+        function startAudio() {
           if (audioReady) return;
           audio
             .play()
             .then(() => {
               audioReady = true;
-              isMuted = false;
-              document.querySelector("#soundToggle i").className =
-                "fas fa-volume-up";
+              document.removeEventListener("click", startAudio);
             })
             .catch((err) => {
-              console.log(
-                "Audio autoplay blocked. Waiting for user interaction.",
-              );
+              console.log("Audio play failed:", err);
             });
         }
 
-        window.addEventListener("load", () => {
-          initAudio();
+        document.addEventListener("click", startAudio);
+        document.addEventListener("touchstart", startAudio, { passive: true });
+
+        window.addEventListener("load", function () {
           const bgVideo = document.getElementById("bgVideo");
           if (bgVideo) {
             bgVideo.muted = true;
@@ -988,27 +1197,59 @@
           }
         });
 
-        document.addEventListener("click", function () {
-          if (!audioReady) {
-            initAudio();
+        // --- Volume slider (standalone) ---
+        const volumeSlider = document.getElementById("volumeSlider");
+        const volumeLabel = document.getElementById("volumeLabel");
+        const volumeIcon = document.getElementById("volumeIcon");
+
+        // Set initial volume
+        audio.volume = parseFloat(volumeSlider.value);
+        updateVolumeDisplay(parseFloat(volumeSlider.value));
+
+        volumeSlider.addEventListener("input", function (e) {
+          e.stopPropagation();
+          const val = parseFloat(this.value);
+          if (audioReady) {
+            audio.volume = val;
           }
+          updateVolumeDisplay(val);
         });
 
-        const soundToggle = document.getElementById("soundToggle");
-        soundToggle.addEventListener("click", function (e) {
-          e.stopPropagation();
+        function updateVolumeDisplay(val) {
+          const percent = Math.round(val * 100);
+          volumeLabel.textContent = percent + "%";
+          if (val === 0) {
+            volumeIcon.textContent = "🔇";
+          } else if (val < 0.3) {
+            volumeIcon.textContent = "🔈";
+          } else if (val < 0.7) {
+            volumeIcon.textContent = "🔉";
+          } else {
+            volumeIcon.textContent = "🔊";
+          }
+        }
+
+        // Click on volume control toggles mute
+        const volumeControl = document.getElementById("volumeControl");
+        volumeControl.addEventListener("click", function (e) {
+          if (e.target.closest(".volume-slider")) return;
           if (!audioReady) {
-            initAudio();
+            startAudio();
             return;
           }
-          if (isMuted) {
-            audio.play();
-            this.querySelector("i").className = "fas fa-volume-up";
-            isMuted = false;
+          const currentVal = parseFloat(volumeSlider.value);
+          if (currentVal > 0) {
+            // store current value and mute
+            this.dataset.prevVolume = currentVal;
+            volumeSlider.value = 0;
+            audio.volume = 0;
+            updateVolumeDisplay(0);
           } else {
-            audio.pause();
-            this.querySelector("i").className = "fas fa-volume-mute";
-            isMuted = true;
+            // unmute to previous or 0.5
+            const prev = parseFloat(this.dataset.prevVolume) || 0.5;
+            volumeSlider.value = prev;
+            audio.volume = prev;
+            updateVolumeDisplay(prev);
           }
         });
 
@@ -1052,7 +1293,6 @@
             URL.revokeObjectURL(link.href);
           });
 
-        // --- Add to Calendar: Other (Google Calendar) ---
         document
           .getElementById("addToCalendarOther")
           .addEventListener("click", function (e) {
@@ -1086,7 +1326,7 @@
           currentIndex = index;
           slidesWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
 
-          dots.forEach((dot, i) => {
+          document.querySelectorAll(".dot").forEach((dot, i) => {
             dot.classList.toggle("active", i === currentIndex);
           });
 
@@ -1100,10 +1340,18 @@
           });
         }
 
-        prevBtn.addEventListener("click", () => goToSlide(currentIndex - 1));
-        nextBtn.addEventListener("click", () => goToSlide(currentIndex + 1));
+        for (let i = 0; i < totalSlides; i++) {
+          const prevBtn = document.getElementById(`prevBtnSlide${i}`);
+          const nextBtn = document.getElementById(`nextBtnSlide${i}`);
+          if (prevBtn) {
+            prevBtn.addEventListener("click", () => goToSlide(currentIndex - 1));
+          }
+          if (nextBtn) {
+            nextBtn.addEventListener("click", () => goToSlide(currentIndex + 1));
+          }
+        }
 
-        dots.forEach((dot) => {
+        document.querySelectorAll(".dot").forEach((dot) => {
           dot.addEventListener("click", function () {
             const index = parseInt(this.getAttribute("data-index"), 10);
             goToSlide(index);
@@ -1118,7 +1366,7 @@
           (e) => {
             touchStartX = e.changedTouches[0].screenX;
           },
-          { passive: true },
+          { passive: true }
         );
         container.addEventListener(
           "touchend",
@@ -1130,7 +1378,7 @@
               else goToSlide(currentIndex - 1);
             }
           },
-          { passive: true },
+          { passive: true }
         );
 
         document.addEventListener("keydown", (e) => {
@@ -1138,9 +1386,7 @@
           else if (e.key === "ArrowLeft") goToSlide(currentIndex - 1);
         });
 
-        window.addEventListener("load", () => {
-          goToSlide(0);
-        });
+        goToSlide(0);
       })();
     </script>
   </body>
