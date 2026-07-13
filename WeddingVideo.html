@@ -179,7 +179,7 @@
         transform: translateY(-50%);
       }
 
-      /* ---- VOLUME SLIDER (standalone, no icon) ---- */
+      /* ---- VOLUME SLIDER (standalone) ---- */
       .volume-control {
         position: absolute;
         bottom: 24px;
@@ -196,6 +196,7 @@
         gap: 10px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         transition: 0.25s;
+        cursor: pointer;
       }
       .volume-control:hover {
         background: rgba(255, 255, 255, 0.12);
@@ -232,15 +233,16 @@
         font-size: 0.7rem;
         font-weight: 500;
         letter-spacing: 0.5px;
-        text-transform: uppercase;
-        min-width: 20px;
+        min-width: 28px;
         text-align: center;
+        user-select: none;
       }
       .volume-control .volume-icon {
         color: rgba(255, 255, 255, 0.6);
         font-size: 0.9rem;
         width: 18px;
         text-align: center;
+        user-select: none;
       }
 
       .title {
@@ -608,7 +610,7 @@
         }
         .volume-control .volume-label {
           font-size: 0.6rem;
-          min-width: 16px;
+          min-width: 22px;
         }
         .volume-control .volume-icon {
           font-size: 0.75rem;
@@ -756,7 +758,7 @@
           </video>
           <div class="bg-overlay"></div>
 
-          <!-- standalone volume slider (no icon) -->
+          <!-- standalone volume slider -->
           <div class="volume-control" id="volumeControl">
             <span class="volume-icon" id="volumeIcon">🔊</span>
             <input
@@ -1151,11 +1153,18 @@
       (function () {
         const ws = document.getElementById("welcomeScreen");
         const eb = document.getElementById("enterInvitation");
+        const audio = document.getElementById("local-audio");
+        const bgVideo = document.getElementById("bgVideo");
+        let audioReady = false;
+
+        // --- Auto-start audio on welcome screen tap ---
         eb.addEventListener("click", async () => {
           try {
             await audio.play();
             audioReady = true;
-          } catch (e) {}
+          } catch (e) {
+            console.log("Audio autoplay blocked, waiting for user interaction");
+          }
           try {
             bgVideo.play();
           } catch (e) {}
@@ -1169,88 +1178,80 @@
         let currentIndex = 0;
         const totalSlides = slides.length;
 
-        // --- Local Audio ---
-        const audio = document.getElementById("local-audio");
-        let audioReady = false;
-
-        function startAudio() {
-          if (audioReady) return;
-          audio
-            .play()
-            .then(() => {
-              audioReady = true;
-              document.removeEventListener("click", startAudio);
-            })
-            .catch((err) => {
-              console.log("Audio play failed:", err);
-            });
-        }
-
-        document.addEventListener("click", startAudio);
-        document.addEventListener("touchstart", startAudio, { passive: true });
-
-        window.addEventListener("load", function () {
-          const bgVideo = document.getElementById("bgVideo");
-          if (bgVideo) {
-            bgVideo.muted = true;
-            bgVideo.play().catch(() => {});
-          }
-        });
-
-        // --- Volume slider (standalone) ---
+        // --- Volume slider ---
         const volumeSlider = document.getElementById("volumeSlider");
         const volumeLabel = document.getElementById("volumeLabel");
         const volumeIcon = document.getElementById("volumeIcon");
-
-        // Set initial volume
-        audio.volume = parseFloat(volumeSlider.value);
-        updateVolumeDisplay(parseFloat(volumeSlider.value));
-
-        volumeSlider.addEventListener("input", function (e) {
-          e.stopPropagation();
-          const val = parseFloat(this.value);
-          if (audioReady) {
-            audio.volume = val;
-          }
-          updateVolumeDisplay(val);
-        });
+        let isMuted = false;
+        let previousVolume = 0.5;
 
         function updateVolumeDisplay(val) {
           const percent = Math.round(val * 100);
           volumeLabel.textContent = percent + "%";
           if (val === 0) {
             volumeIcon.textContent = "🔇";
-          } else if (val < 0.3) {
-            volumeIcon.textContent = "🔈";
-          } else if (val < 0.7) {
-            volumeIcon.textContent = "🔉";
+            isMuted = true;
           } else {
-            volumeIcon.textContent = "🔊";
+            isMuted = false;
+            if (val < 0.3) volumeIcon.textContent = "🔈";
+            else if (val < 0.7) volumeIcon.textContent = "🔉";
+            else volumeIcon.textContent = "🔊";
           }
         }
+
+        // Set initial volume
+        audio.volume = parseFloat(volumeSlider.value);
+        updateVolumeDisplay(parseFloat(volumeSlider.value));
+
+        // Slider input - always works, even if audio isn't ready yet
+        volumeSlider.addEventListener("input", function (e) {
+          e.stopPropagation();
+          const val = parseFloat(this.value);
+          audio.volume = val; // this works even before play() is called
+          previousVolume = val;
+          updateVolumeDisplay(val);
+          // If audio is paused and we're not muted, try to play
+          if (!isMuted && !audioReady) {
+            audio.play().catch(() => {});
+          }
+        });
 
         // Click on volume control toggles mute
         const volumeControl = document.getElementById("volumeControl");
         volumeControl.addEventListener("click", function (e) {
           if (e.target.closest(".volume-slider")) return;
+
           if (!audioReady) {
-            startAudio();
+            // Try to start audio
+            audio.play().then(() => {
+              audioReady = true;
+            }).catch(() => {});
             return;
           }
+
           const currentVal = parseFloat(volumeSlider.value);
           if (currentVal > 0) {
-            // store current value and mute
-            this.dataset.prevVolume = currentVal;
+            // Mute: store current value and set to 0
+            previousVolume = currentVal;
             volumeSlider.value = 0;
             audio.volume = 0;
             updateVolumeDisplay(0);
           } else {
-            // unmute to previous or 0.5
-            const prev = parseFloat(this.dataset.prevVolume) || 0.5;
-            volumeSlider.value = prev;
-            audio.volume = prev;
-            updateVolumeDisplay(prev);
+            // Unmute: restore previous volume
+            const restoreVal = previousVolume > 0 ? previousVolume : 0.5;
+            volumeSlider.value = restoreVal;
+            audio.volume = restoreVal;
+            updateVolumeDisplay(restoreVal);
+            // Ensure audio is playing
+            if (audio.paused) {
+              audio.play().catch(() => {});
+            }
           }
+        });
+
+        // Also handle volume changes when audio becomes ready
+        audio.addEventListener("loadedmetadata", function () {
+          audio.volume = parseFloat(volumeSlider.value);
         });
 
         // --- Add to Calendar: iPhone ---
