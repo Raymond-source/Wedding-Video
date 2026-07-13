@@ -687,7 +687,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
           url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1600&auto=format&fit=crop")
             center/cover;
       }
@@ -947,8 +948,8 @@
                 <a href="#" class="calendar-btn" id="addToCalendarIphone"
                   ><i class="fab fa-apple"></i> iPhone</a
                 >
-                <a href="#" class="calendar-btn" id="addToCalendarOther"
-                  ><i class="fas fa-calendar-plus"></i> Other</a
+                <a href="#" class="calendar-btn" id="addToCalendarGoogle"
+                  ><i class="fab fa-google"></i> Google</a
                 >
               </div>
 
@@ -1223,9 +1224,12 @@
 
           if (!audioReady) {
             // Try to start audio
-            audio.play().then(() => {
-              audioReady = true;
-            }).catch(() => {});
+            audio
+              .play()
+              .then(() => {
+                audioReady = true;
+              })
+              .catch(() => {});
             return;
           }
 
@@ -1254,7 +1258,7 @@
           audio.volume = parseFloat(volumeSlider.value);
         });
 
-        // --- Add to Calendar: iPhone ---
+        // --- Add to Calendar: iPhone (download .ics) ---
         document
           .getElementById("addToCalendarIphone")
           .addEventListener("click", function (e) {
@@ -1294,8 +1298,9 @@
             URL.revokeObjectURL(link.href);
           });
 
+        // --- Add to Calendar: Google Calendar ---
         document
-          .getElementById("addToCalendarOther")
+          .getElementById("addToCalendarGoogle")
           .addEventListener("click", function (e) {
             e.preventDefault();
             const event = {
@@ -1345,10 +1350,14 @@
           const prevBtn = document.getElementById(`prevBtnSlide${i}`);
           const nextBtn = document.getElementById(`nextBtnSlide${i}`);
           if (prevBtn) {
-            prevBtn.addEventListener("click", () => goToSlide(currentIndex - 1));
+            prevBtn.addEventListener("click", () =>
+              goToSlide(currentIndex - 1),
+            );
           }
           if (nextBtn) {
-            nextBtn.addEventListener("click", () => goToSlide(currentIndex + 1));
+            nextBtn.addEventListener("click", () =>
+              goToSlide(currentIndex + 1),
+            );
           }
         }
 
@@ -1367,7 +1376,7 @@
           (e) => {
             touchStartX = e.changedTouches[0].screenX;
           },
-          { passive: true }
+          { passive: true },
         );
         container.addEventListener(
           "touchend",
@@ -1379,7 +1388,7 @@
               else goToSlide(currentIndex - 1);
             }
           },
-          { passive: true }
+          { passive: true },
         );
 
         document.addEventListener("keydown", (e) => {
