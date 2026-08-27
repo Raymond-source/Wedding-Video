@@ -394,6 +394,10 @@
         background: #e8cdb9;
         transform: scale(1.01);
       }
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
       .dots {
         display: flex;
@@ -625,6 +629,42 @@
         width: 100%;
       }
 
+      /* Toast notification */
+      .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 16px 24px;
+        border-radius: 16px;
+        z-index: 999999;
+        font-weight: 500;
+        font-size: 0.95rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+        pointer-events: none;
+        max-width: 90%;
+        text-align: center;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+      }
+      .toast.success {
+        background: rgba(46, 125, 50, 0.9);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .toast.error {
+        background: rgba(211, 47, 47, 0.9);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
       @media (max-width: 480px) {
         .slide-inner {
           padding: 20px 16px 18px;
@@ -682,6 +722,11 @@
         }
         .logo-container img {
           max-width: 160px;
+        }
+        .toast {
+          bottom: 20px;
+          padding: 14px 20px;
+          font-size: 0.85rem;
         }
       }
       @media (min-width: 600px) {
@@ -1147,15 +1192,17 @@
                   Kindly respond by <strong>1st November 2026</strong>
                 </p>
               </div>
-              <div class="anim-text rsvp-form">
-                <input type="text" placeholder="Full name" />
-                <input type="email" placeholder="Email address" />
-                <select>
-                  <option>💚 Will attend with joy</option>
-                  <option>💛 Will attend with guest</option>
-                  <option>🤍 Sadly, cannot attend</option>
+              <div class="anim-text rsvp-form" id="rsvpForm">
+                <input type="text" id="rsvpName" placeholder="Full name *" required />
+                <input type="email" id="rsvpEmail" placeholder="Email address *" required />
+                <input type="tel" id="rsvpPhone" placeholder="Phone number (optional)" />
+                <select id="rsvpAttendance">
+                  <option value="Will attend with joy">💚 Will attend with joy</option>
+                  <option value="Will attend with guest">💛 Will attend with guest</option>
+                  <option value="Sadly, cannot attend">🤍 Sadly, cannot attend</option>
                 </select>
-                <button class="btn-primary">
+                <input type="text" id="rsvpDietary" placeholder="Dietary needs (optional)" />
+                <button class="btn-primary" id="rsvpSubmitBtn">
                   <i class="fas fa-check-circle"></i> Send RSVP
                 </button>
               </div>
@@ -1184,6 +1231,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
 
     <script>
       (function () {
@@ -1432,6 +1482,103 @@
         });
 
         goToSlide(0);
+
+        // --- RSVP Form Handler with API Integration ---
+        const rsvpForm = document.getElementById('rsvpForm');
+        const submitBtn = document.getElementById('rsvpSubmitBtn');
+        const toast = document.getElementById('toast');
+
+        function showToast(message, type = 'success') {
+          toast.textContent = message;
+          toast.className = 'toast ' + type + ' show';
+          clearTimeout(toast._timeout);
+          toast._timeout = setTimeout(() => {
+            toast.classList.remove('show');
+          }, 5000);
+        }
+
+        // Get API URL - using your domain
+        const API_URL = 'https://makhutja-raymond-2026-2027.co.za/api/rsvp.php';
+
+        if (rsvpForm) {
+          rsvpForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('rsvpName').value.trim();
+            const email = document.getElementById('rsvpEmail').value.trim();
+            const phone = document.getElementById('rsvpPhone').value.trim();
+            const attendance = document.getElementById('rsvpAttendance').value;
+            const dietary = document.getElementById('rsvpDietary').value.trim();
+            
+            // Validate required fields
+            if (!fullName || !email) {
+              showToast('Please fill in all required fields', 'error');
+              return;
+            }
+            
+            // Validate email
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+              showToast('Please enter a valid email address', 'error');
+              return;
+            }
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            
+            try {
+              const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                  fullName: fullName,
+                  email: email,
+                  phone: phone || null,
+                  attendance: attendance,
+                  dietary: dietary || null
+                })
+              });
+              
+              const data = await response.json();
+              
+              if (data.success) {
+                showToast('✅ RSVP submitted successfully! Thank you!', 'success');
+                rsvpForm.reset();
+                // Reset to first option
+                document.getElementById('rsvpAttendance').selectedIndex = 0;
+              } else {
+                showToast('❌ Error: ' + (data.message || 'Submission failed'), 'error');
+              }
+            } catch (error) {
+              console.error('RSVP Error:', error);
+              showToast('❌ Error submitting RSVP. Please try again.', 'error');
+            } finally {
+              // Re-enable button
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Send RSVP';
+            }
+          });
+        }
+
+        // Check if API is reachable on load
+        async function checkAPIHealth() {
+          try {
+            const response = await fetch(API_URL, {
+              method: 'HEAD',
+              headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) {
+              console.warn('API health check failed:', response.status);
+            }
+          } catch (e) {
+            console.warn('API not reachable. Ensure the backend is running.');
+          }
+        }
+        checkAPIHealth();
+
       })();
     </script>
   </body>
